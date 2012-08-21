@@ -1,0 +1,24 @@
+Help
+
+The following commands are available (just press the key for the command):
+
+    d - switch to 'delete' mode (for deleting nodes and edges) 
+    e - switch to 'edge' mode (for adding edges)
+    h - displays this help message
+    i - print info about the graph
+    l - load graph, discarting current
+    m - switch to 'modity' mode (for modifying attributes and move nodes)
+    n - switch to 'node' mode (for adding nodes)
+    q - quit program without saving
+    s - save graph
+    y - redo last change
+    z - undo last change
+
+    esc - deselect current node (edge mode only)
+    F11 - swich between fulscreen and windowed mode
+
+There are also mouse commands:
+
+    left click - do action according to current mode
+    wheel scroll - increase reduce zoom
+    mouse drag with right button pressed - move in space

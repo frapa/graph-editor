@@ -27,6 +27,7 @@ class App(pyglet.window.Window):
         self.box = [0, 0, 1000, 1000]
         self.history = []
         self.history_index = -1
+        self.sidebar_width = 300
 
         # create vertex list
         self.statusbar = pyglet.graphics.vertex_list(4, 
@@ -34,7 +35,7 @@ class App(pyglet.window.Window):
             ('c3B', (30, 30, 30) * 4)
         )
         self.line = pyglet.graphics.vertex_list(2,
-            ('v2f', (self.width - 210, 2, self.width - 210, 22)),
+            ('v2f', (self.width - 200, 2, self.width - 200, 22)),
             ('c3B', (80, 80, 80) * 2)
         )
 
@@ -198,11 +199,80 @@ class App(pyglet.window.Window):
             self.line.draw(pyglet.gl.GL_LINES)
 
             # draw mode in the statusbar
-            mode_label = pyglet.text.Label(self.mode, font_name='Sans', font_size=12, x=self.width - 200, y=6)
+            mode_label = pyglet.text.Label(self.mode, font_name='Sans', font_size=12, x=self.width - 190, y=6)
             mode_label.draw()
 
             # draw command
             self.cmd_label.draw()
+
+            # if mode is modify, then show sidebar
+            if self.mode == "modify":
+                if self.selected != None:
+                    attributes = self.g.node[self.selected]
+
+                    # variables used not to repeat 100 times the same thing
+                    sidebar_border = 10
+                    sidebar_padding = 20
+                    cell_height = 28
+                    cell_padding = 6
+
+                    # precompute some stuff
+                    sidebar_left = self.width - self.sidebar_width - sidebar_border
+                    sidebar_top = self.height - sidebar_border
+                    sidebar_height = sidebar_padding * 2 + len(attributes) * cell_height
+                    sidebar_content_left = sidebar_left + sidebar_padding
+                    sidebar_content_top = sidebar_top - sidebar_padding
+                    cell_width = self.sidebar_width / 2 - sidebar_padding
+                    sidebar_middle = sidebar_content_left + cell_width
+                    sidebar_content_right = sidebar_content_left + cell_width * 2
+
+                    # draw box
+                    pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
+                        ('v2f', (sidebar_left, sidebar_top,
+                            sidebar_left + self.sidebar_width, sidebar_top,
+                            sidebar_left + self.sidebar_width, sidebar_top - sidebar_height,
+                            sidebar_left, sidebar_top - sidebar_height)),
+                        ('c3B', (50, 50, 50) * 4)
+                    )
+                    
+                    # draw grid
+                    # compute the number of its vertices
+                    vertex_num = 8 + len(attributes) * 2
+
+                    # create vertices
+                    grid_vertices = []
+                    # horizontal lines
+                    for n in range(len(attributes) + 1):
+                        grid_vertices.extend((
+                            sidebar_content_left, sidebar_content_top - n * cell_height,
+                            sidebar_content_right, sidebar_content_top - n * cell_height
+                        ))
+                    # vertical lines
+                    grid_vertices.extend((
+                        sidebar_content_left, sidebar_content_top,
+                        sidebar_content_left, sidebar_content_top - len(attributes) * cell_height,
+                        sidebar_middle, sidebar_content_top,
+                        sidebar_middle, sidebar_content_top - len(attributes) * cell_height,
+                        sidebar_content_right, sidebar_content_top,
+                        sidebar_content_right, sidebar_content_top - len(attributes) * cell_height,
+                    ))
+
+                    # actually draw grid
+                    pyglet.graphics.draw(vertex_num, pyglet.gl.GL_LINES,
+                        ('v2f', grid_vertices),
+                        ('c3B', (100, 100, 100) * vertex_num)
+                    )
+
+                    for n, (key, value) in enumerate(attributes.iteritems()):
+                        ly = sidebar_content_top - n * cell_height - cell_padding
+
+                        key_label = pyglet.text.Label(str(key), font_name='Sans', font_size=12,
+                            x=sidebar_content_left + cell_padding, y=ly, anchor_y="top")
+                        value_label = pyglet.text.Label(str(value), font_name='Sans', font_size=12,
+                            x=sidebar_middle + cell_padding, y=ly, anchor_y="top")
+
+                        key_label.draw()
+                        value_label.draw()
 
     def on_mouse_press(self, x, y, buttons, modifiers):
         node = self.check_node(x, y)
@@ -366,6 +436,9 @@ class App(pyglet.window.Window):
                 size = stat.st_size / 1000.0
                 # display info
                 self.cmd_label.text = "{0} nodes loaded from graph.graphml ({1:,.1f}k)".format(num_nodes, size)
+
+                # clean up
+                self.selected = None
             except IOError:
                 # the file was missing
                 self.cmd_label.text = "File graph.graphml not found"
@@ -398,8 +471,8 @@ class App(pyglet.window.Window):
         self.statusbar.vertices[2] = self.width
         self.statusbar.vertices[4] = self.width
 
-        self.line.vertices[0] = self.width - 210
-        self.line.vertices[2] = self.width - 210
+        self.line.vertices[0] = self.width - 200
+        self.line.vertices[2] = self.width - 200
 
 
 if __name__ == "__main__":

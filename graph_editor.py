@@ -64,7 +64,7 @@ class App(pyglet.window.Window):
         x = x - self.offset[0]
         y = y - self.offset[1]
 
-        for node in self.g.nodes_iter():
+        for node in self.g.nodes():
             d = (self.g.node[node]["x"] * self.scale - x)**2 + (self.g.node[node]["y"] * self.scale - y)**2
 
             if d < 36:
@@ -76,7 +76,7 @@ class App(pyglet.window.Window):
         x = x - self.offset[0]
         y = y - self.offset[1]
 
-        for edge in self.g.edges_iter():
+        for edge in self.g.edges():
             n1 = self.g.node[edge[0]]
             n2 = self.g.node[edge[1]]
 
@@ -169,7 +169,7 @@ class App(pyglet.window.Window):
             self.info_label.draw()
         else:
             # draw edges
-            for edge in self.g.edges_iter():
+            for edge in self.g.edges():
                 pyglet.graphics.draw(2, pyglet.gl.GL_LINES, ('v2f', (
                     ox + self.g.node[edge[0]]["x"] * self.scale,
                     oy + self.g.node[edge[0]]["y"] * self.scale,
@@ -177,14 +177,14 @@ class App(pyglet.window.Window):
                     oy + self.g.node[edge[1]]["y"] * self.scale)))
 
             # draw nodes
-            for node in self.g.nodes_iter():
+            for node in self.g.nodes():
                 if node == self.selected:
-                    self.selected_sprite.set_position(ox + self.g.node[node]["x"] * self.scale,
-                            oy + self.g.node[node]["y"] * self.scale)
+                    self.selected_sprite.update(x = ox + self.g.node[node]["x"] * self.scale,
+                            y = oy + self.g.node[node]["y"] * self.scale)
                     self.selected_sprite.draw()
                 else:
-                    self.node_sprite.set_position(ox + self.g.node[node]["x"] * self.scale,
-                            oy + self.g.node[node]["y"] * self.scale)
+                    self.node_sprite.update(x = ox + self.g.node[node]["x"] * self.scale,
+                            y = oy + self.g.node[node]["y"] * self.scale)
                     self.node_sprite.draw()
             
             # draw borders

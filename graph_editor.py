@@ -119,14 +119,14 @@ class App(pyglet.window.Window):
             elif change[0] == "del":
                 self.g.add_node(change[1], **change[2])
 
-                for node, attributes in change[3].iteritems():
+                for node, attributes in change[3].items():
                     self.g.add_edge(change[1], node, **attributes)
             elif change[0] == "del edge":
                 self.g.add_edge(*change[1], **change[2])
             elif change[0] == "move":
                 self.g.node[change[1]] = change[2]
 
-                for node, attributes in change[3].iteritems():
+                for node, attributes in change[3].items():
                     self.g.add_edge(change[1], node, **attributes)
 
             self.history_index -= 1
@@ -150,7 +150,7 @@ class App(pyglet.window.Window):
             elif change[0] == "move":
                 self.g.node[change[1]] = change[4]
 
-                for node, attributes in change[5].iteritems():
+                for node, attributes in change[5].items():
                     self.g.add_edge(change[1], node, **attributes)
 
             self.cmd_label.text = "'{0}' operation redone".format(change[0])
@@ -263,7 +263,7 @@ class App(pyglet.window.Window):
                         ('c3B', (100, 100, 100) * vertex_num)
                     )
 
-                    for n, (key, value) in enumerate(attributes.iteritems()):
+                    for n, (key, value) in enumerate(attributes.items()):
                         ly = sidebar_content_top - n * cell_height - cell_padding
 
                         key_label = pyglet.text.Label(str(key), font_name='Sans', font_size=12,

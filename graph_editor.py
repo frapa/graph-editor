@@ -30,7 +30,7 @@ class App(pyglet.window.Window):
         self.sidebar_width = 300
 
         # create vertex list
-        self.statusbar = pyglet.graphics.vertex_list(4, 
+        self.statusbar = pyglet.graphics.vertex_list(4,
             ('v2f', (0, 0, self.width, 0, self.width, 24, 0, 24)),
             ('c3B', (30, 30, 30) * 4)
         )
@@ -71,7 +71,7 @@ class App(pyglet.window.Window):
                 return node
 
         return False
-    
+
     def check_edge(self, x, y):
         x = x - self.offset[0]
         y = y - self.offset[1]
@@ -124,7 +124,8 @@ class App(pyglet.window.Window):
             elif change[0] == "del edge":
                 self.g.add_edge(*change[1], **change[2])
             elif change[0] == "move":
-                self.g.node[change[1]] = change[2]
+                self.g.node[change[1]]["x"] = change[2]["x"]
+                self.g.node[change[1]]["y"] = change[2]["y"]
 
                 for node, attributes in change[3].items():
                     self.g.add_edge(change[1], node, **attributes)
@@ -148,7 +149,8 @@ class App(pyglet.window.Window):
             elif change[0] == "del edge":
                 self.g.remove_edge(*change[1])
             elif change[0] == "move":
-                self.g.node[change[1]] = change[4]
+                self.g.node[change[1]]["x"] = change[4]["x"]
+                self.g.node[change[1]]["y"] = change[4]["y"]
 
                 for node, attributes in change[5].items():
                     self.g.add_edge(change[1], node, **attributes)
@@ -186,7 +188,7 @@ class App(pyglet.window.Window):
                     self.node_sprite.update(x = ox + self.g.node[node]["x"] * self.scale,
                             y = oy + self.g.node[node]["y"] * self.scale)
                     self.node_sprite.draw()
-            
+
             # draw borders
             pyglet.graphics.draw(4, pyglet.gl.GL_LINE_LOOP,
                 ('v2f', (self.box[0] * self.scale + ox, self.box[1] * self.scale + oy,
@@ -234,7 +236,7 @@ class App(pyglet.window.Window):
                             sidebar_left, sidebar_top - sidebar_height)),
                         ('c3B', (50, 50, 50) * 4)
                     )
-                    
+
                     # draw grid
                     # compute the number of its vertices
                     vertex_num = 8 + len(attributes) * 2
@@ -290,7 +292,7 @@ class App(pyglet.window.Window):
         elif buttons & mouse.LEFT and self.mode == "modify":
             if self.selected != None:
                 node = self.g.node[self.selected]
-                
+
                 if not self.drag:
                     # add to history
                     self.history_index += 1
@@ -301,7 +303,7 @@ class App(pyglet.window.Window):
 
                 node["x"] += dx / self.scale
                 node["y"] += dy / self.scale
-                
+
     def on_mouse_release(self, x, y, buttons, modifiers):
         if buttons & mouse.LEFT:
             if self.mode == "node":
@@ -375,7 +377,7 @@ class App(pyglet.window.Window):
 
                     # actually remove the edge
                     self.g.remove_edge(*edge)
-        
+
         # dragging of node ended update some stuff
         if self.drag:
             node = self.g.node[self.selected]
@@ -383,7 +385,7 @@ class App(pyglet.window.Window):
             # change weight of connected edges
             for connected_node in iter(self.g[self.selected]):
                 c_node = self.g.node[connected_node]
-                # compute new distance                   
+                # compute new distance
                 d = math.sqrt((node["x"] - c_node["x"])**2 + (node["y"] - c_node["y"])**2)
 
                 self.g[self.selected][connected_node]["weight"] = d
@@ -407,7 +409,7 @@ class App(pyglet.window.Window):
             # get info
             node_number = len(self.g)
             edge_number = len(self.g.edges())
-            
+
             self.info_label.text = "Info\n\nNumber of nodes: {0}\nNumber of edges: {1}".format(node_number, edge_number)
 
     def on_key_release(self, symbol, modifiers):
@@ -422,7 +424,7 @@ class App(pyglet.window.Window):
         elif symbol == key.S:
             nx.write_graphml(self.g, "graph.graphml")
             # get info about the file
-            stat = os.stat("graph.graphml") 
+            stat = os.stat("graph.graphml")
             num_nodes = len(self.g)
             size = stat.st_size / 1000.0
             # display info
@@ -459,7 +461,7 @@ class App(pyglet.window.Window):
 
     def on_resize(self, width, height):
         super(App, self).on_resize(width, height)
-        
+
         self.info_label.y = self.height - 50
         self.info_label.width = self.width - 100
         self.info_label.height = self.height - 100
@@ -478,4 +480,3 @@ class App(pyglet.window.Window):
 if __name__ == "__main__":
     window = App()
     pyglet.app.run()
-

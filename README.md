@@ -17,6 +17,8 @@ you can install them just by typing:
 
     sudo apt-get install python-pyglet python-networkx
 
+The editor works for in both python 2.7 and 3+.
+
 ## Running
 
 Be sure to be in the base directory (that is the directory which contains

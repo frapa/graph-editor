@@ -15,7 +15,7 @@ run it from its folder.
 ## Dependencies
 
 You need to have pyglet and networkx installed in your system.
-I used the following versions:
+Try using the following versions:
 
 pyglet==1.5.26
 

@@ -14,6 +14,7 @@ run it from its folder.
 
 You need to have pyglet and networkx installed in your system.
 I used the following versions:
+
 pyglet==1.5.26
 networkx==2.5.1
 

@@ -17,9 +17,10 @@ run it from its folder.
 You need to have pyglet and networkx installed in your system.
 Try using the following versions:
 
+```
 pyglet==1.5.26
-
 networkx==2.5.1
+```
 
 The editor works for in both python 2.7 and 3+.
 

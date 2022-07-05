@@ -65,7 +65,7 @@ class App(pyglet.window.Window):
         y = y - self.offset[1]
 
         for node in self.g.nodes():
-            d = (self.g.node[node]["x"] * self.scale - x)**2 + (self.g.node[node]["y"] * self.scale - y)**2
+            d = (self.g.nodes[node]["x"] * self.scale - x)**2 + (self.g.nodes[node]["y"] * self.scale - y)**2
 
             if d < 36:
                 return node
@@ -77,8 +77,8 @@ class App(pyglet.window.Window):
         y = y - self.offset[1]
 
         for edge in self.g.edges():
-            n1 = self.g.node[edge[0]]
-            n2 = self.g.node[edge[1]]
+            n1 = self.g.nodes[edge[0]]
+            n2 = self.g.nodes[edge[1]]
 
             n1x = n1["x"] * self.scale
             n1y = n1["y"] * self.scale
@@ -124,8 +124,8 @@ class App(pyglet.window.Window):
             elif change[0] == "del edge":
                 self.g.add_edge(*change[1], **change[2])
             elif change[0] == "move":
-                self.g.node[change[1]]["x"] = change[2]["x"]
-                self.g.node[change[1]]["y"] = change[2]["y"]
+                self.g.nodes[change[1]]["x"] = change[2]["x"]
+                self.g.nodes[change[1]]["y"] = change[2]["y"]
 
                 for node, attributes in change[3].items():
                     self.g.add_edge(change[1], node, **attributes)
@@ -149,8 +149,8 @@ class App(pyglet.window.Window):
             elif change[0] == "del edge":
                 self.g.remove_edge(*change[1])
             elif change[0] == "move":
-                self.g.node[change[1]]["x"] = change[4]["x"]
-                self.g.node[change[1]]["y"] = change[4]["y"]
+                self.g.nodes[change[1]]["x"] = change[4]["x"]
+                self.g.nodes[change[1]]["y"] = change[4]["y"]
 
                 for node, attributes in change[5].items():
                     self.g.add_edge(change[1], node, **attributes)
@@ -173,20 +173,20 @@ class App(pyglet.window.Window):
             # draw edges
             for edge in self.g.edges():
                 pyglet.graphics.draw(2, pyglet.gl.GL_LINES, ('v2f', (
-                    ox + self.g.node[edge[0]]["x"] * self.scale,
-                    oy + self.g.node[edge[0]]["y"] * self.scale,
-                    ox + self.g.node[edge[1]]["x"] * self.scale,
-                    oy + self.g.node[edge[1]]["y"] * self.scale)))
+                    ox + self.g.nodes[edge[0]]["x"] * self.scale,
+                    oy + self.g.nodes[edge[0]]["y"] * self.scale,
+                    ox + self.g.nodes[edge[1]]["x"] * self.scale,
+                    oy + self.g.nodes[edge[1]]["y"] * self.scale)))
 
             # draw nodes
             for node in self.g.nodes():
                 if node == self.selected:
-                    self.selected_sprite.update(x = ox + self.g.node[node]["x"] * self.scale,
-                            y = oy + self.g.node[node]["y"] * self.scale)
+                    self.selected_sprite.update(x = ox + self.g.nodes[node]["x"] * self.scale,
+                            y = oy + self.g.nodes[node]["y"] * self.scale)
                     self.selected_sprite.draw()
                 else:
-                    self.node_sprite.update(x = ox + self.g.node[node]["x"] * self.scale,
-                            y = oy + self.g.node[node]["y"] * self.scale)
+                    self.node_sprite.update(x = ox + self.g.nodes[node]["x"] * self.scale,
+                            y = oy + self.g.nodes[node]["y"] * self.scale)
                     self.node_sprite.draw()
 
             # draw borders
@@ -210,7 +210,7 @@ class App(pyglet.window.Window):
             # if mode is modify, then show sidebar
             if self.mode == "modify":
                 if self.selected != None:
-                    attributes = self.g.node[self.selected]
+                    attributes = self.g.nodes[self.selected]
 
                     # variables used not to repeat 100 times the same thing
                     sidebar_border = 10
@@ -291,7 +291,7 @@ class App(pyglet.window.Window):
             self.offset[1] += dy
         elif buttons & mouse.LEFT and self.mode == "modify":
             if self.selected != None:
-                node = self.g.node[self.selected]
+                node = self.g.nodes[self.selected]
 
                 if not self.drag:
                     # add to history
@@ -316,7 +316,7 @@ class App(pyglet.window.Window):
                     # add to history
                     self.history_index += 1
                     del self.history[self.history_index:len(self.history)]
-                    self.history.append(("add", self.selected, copy.copy(self.g.node[self.selected])))
+                    self.history.append(("add", self.selected, copy.copy(self.g.nodes[self.selected])))
                 else:
                     self.selected = node
             elif self.mode == "edge":
@@ -334,8 +334,8 @@ class App(pyglet.window.Window):
                     # just do nothing
                     else:
                         if node not in self.g[self.selected]:
-                            n1 = self.g.node[node]
-                            n2 = self.g.node[self.selected]
+                            n1 = self.g.nodes[node]
+                            n2 = self.g.nodes[self.selected]
 
                             n1x = n1["x"] * self.scale
                             n1y = n1["y"] * self.scale
@@ -362,7 +362,7 @@ class App(pyglet.window.Window):
                     # add to history
                     self.history_index += 1
                     del self.history[self.history_index:len(self.history)]
-                    self.history.append(("del", node, self.g.node[node], self.g[node]))
+                    self.history.append(("del", node, self.g.nodes[node], self.g[node]))
 
                     # actually remove the node
                     self.g.remove_node(node)
@@ -380,18 +380,18 @@ class App(pyglet.window.Window):
 
         # dragging of node ended update some stuff
         if self.drag:
-            node = self.g.node[self.selected]
+            node = self.g.nodes[self.selected]
 
             # change weight of connected edges
             for connected_node in iter(self.g[self.selected]):
-                c_node = self.g.node[connected_node]
+                c_node = self.g.nodes[connected_node]
                 # compute new distance
                 d = math.sqrt((node["x"] - c_node["x"])**2 + (node["y"] - c_node["y"])**2)
 
                 self.g[self.selected][connected_node]["weight"] = d
 
             # update history
-            self.history[-1].append(copy.copy(self.g.node[self.selected]))
+            self.history[-1].append(copy.copy(self.g.nodes[self.selected]))
             self.history[-1].append(copy.copy(self.g[self.selected]))
 
             self.drag = False

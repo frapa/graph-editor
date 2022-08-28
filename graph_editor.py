@@ -311,7 +311,7 @@ class App(pyglet.window.Window):
                 # check if a node has not been clicked
                 if node is False:
                     for i in range(len(self.g)+1):
-                        if not self.g.has_node(i):
+                        if not self.g.has_node(str(i)):
                             id=i
                             break
                     self.g.add_node(id, x=float(x - self.offset[0]) / self.scale, y=float(y - self.offset[1]) / self.scale)

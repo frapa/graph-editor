@@ -314,8 +314,8 @@ class App(pyglet.window.Window):
                         if not self.g.has_node(str(i)):
                             id=i
                             break
-                    self.g.add_node(id, x=float(x - self.offset[0]) / self.scale, y=float(y - self.offset[1]) / self.scale)
-                    self.selected = id
+                    self.g.add_node(str(id), x=float(x - self.offset[0]) / self.scale, y=float(y - self.offset[1]) / self.scale)
+                    self.selected = str(id)
                     # add to history
                     self.history_index += 1
                     del self.history[self.history_index:len(self.history)]

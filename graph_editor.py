@@ -310,9 +310,12 @@ class App(pyglet.window.Window):
                 node = self.check_node(x, y)
                 # check if a node has not been clicked
                 if node is False:
-                    self.g.add_node(len(self.g), x=float(x - self.offset[0]) / self.scale, y=float(y - self.offset[1]) / self.scale)
-                    self.selected = len(self.g) - 1
-
+                    for i in range(len(self.g)+1):
+                        if not self.g.has_node(str(i)):
+                            id=i
+                            break
+                    self.g.add_node(str(id), x=float(x - self.offset[0]) / self.scale, y=float(y - self.offset[1]) / self.scale)
+                    self.selected = str(id)
                     # add to history
                     self.history_index += 1
                     del self.history[self.history_index:len(self.history)]
